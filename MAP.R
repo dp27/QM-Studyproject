@@ -103,7 +103,7 @@ ggplot(seasonal.mean.year, aes(x = V4, y = Q))  + geom_point()
 
 ggplot(seasonal.mean.month, aes(x = V4, y= Q, col= Group.1)) + geom_point() + geom_abline(slope = -36.30, intercept = 2367.81)
 ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
-ggplot(yearly.mean.month, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
+ggplot(yearly.mean.month, aes(x = Group.1, y = Q)) + geom_line(aes(col = Month)) + geom_point(aes(col = Month))
 ggplot(omit_total, aes(x = V4, y= Q)) + geom_point() + geom_abline(slope = -23.548, intercept = 2209.961, col = 2)
 
 summary(model.seasonal.month)
