@@ -88,6 +88,7 @@ seasonal.mean.september<- aggregate(september.year[, 5:6], list(september.year$y
 seasonal.mean.september$Month<-c("September") 
 
 yearly.mean.month<- rbind(seasonal.mean.april,seasonal.mean.may,seasonal.mean.june,seasonal.mean.july,seasonal.mean.august,seasonal.mean.september)
+
 #Cbind aber davor Group1 umbennen zu den jeweiligen Monatsnamen
 seasonal.mean.year<- aggregate(omit_total[, 5:6], list(omit_total$year), mean)
 seasonal.mean.month<- aggregate(omit_total[, 5:6], list(omit_total$month), mean)
@@ -97,10 +98,48 @@ library(ggplot2)
 model.total <- lm(data = omit_total, Q~V4)
 model.seasonal.year<-lm(data = omit_total, Q ~ V4)
 model.seasonal.month <-lm(data = seasonal.mean.month, Q ~ V4)
+
+##Diese Modelle für uncertainty bands mit average seasonal discharge
+##Ab hier in die anderen Datensätze kopieren und einfügen 25/02/2020
+lm.september <- lm(data = seasonal.mean.september, Q~V4)
+lm.august <- lm(data = seasonal.mean.august, Q~V4)
+lm.july <- lm(data = seasonal.mean.july, Q~V4)
+lm.june <- lm(data = seasonal.mean.june, Q~V4)
+lm.may <- lm(data = seasonal.mean.may, Q~V4)
+lm.april <- lm(data = seasonal.mean.april, Q~V4)
+lm.vp <- lm(data = seasonal.mean.year, Q~V4)
+ 
+library(tidyr)
+library(dplyr)
+prediction.september <- lm.september %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.mean.september$Group.1))
+
+prediction.august <- lm.august %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.mean.august$Group.1))
+
+prediction.july <- lm.july %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.mean.july$Group.1))
+
+prediction.june <- lm.june %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.mean.june$Group.1))
+
+prediction.vp <- lm.vp %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.mean.year$Group.1))
+
+geom_line(data = prediction.july, aes(x = x, y = fit, col = "july"))
+
+ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.vp, aes(x = x, y = fit, col = "prediction"))
+ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.september, aes(x = x, y = fit, col = "september"))+ geom_line(data = prediction.august, aes(x = x, y = fit, col = "august")) + geom_line(data = prediction.july, aes(x = x, y = fit, col = "july")) +geom_line(data = prediction.june, aes(x = x, y = fit, col = "june"))
+
+plot(seasonal.mean.april$V4, seasonal.mean.april$Q)
+##bis hier kopieren und dann einfügen
 ##model.seasonal.month is the good one
 ####
-ggplot(seasonal.mean.year, aes(x = V4, y = Q))  + geom_point()
-
 ggplot(seasonal.mean.month, aes(x = V4, y= Q, col= Group.1)) + geom_point() + geom_abline(slope = -36.30, intercept = 2367.81)
 ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
 ggplot(yearly.mean.month, aes(x = Group.1, y = Q)) + geom_line(aes(col = Month)) + geom_point(aes(col = Month))
