@@ -140,6 +140,43 @@ model.chir.total <- lm(data = omit_chir.total, Q~V4)
 model.seasonal.chir.year.chir<-lm(data = omit_chir.total, Q ~ V4)
 model.seasonal.chir.Month <-lm(data = seasonal.chir.mean.Month, Q ~ V4)
 ##model.seasonal.chir.Month is the good one
+##NEU ab hier 25/02/2020
+lm.chir.september <- lm(data = seasonal.chir.mean.september, Q~V4)
+lm.chir.august <- lm(data = seasonal.chir.mean.august, Q~V4)
+lm.chir.july <- lm(data = seasonal.chir.mean.july, Q~V4)
+lm.chir.june <- lm(data = seasonal.chir.mean.june, Q~V4)
+lm.chir.may <- lm(data = seasonal.chir.mean.may, Q~V4)
+lm.chir.april <- lm(data = seasonal.chir.mean.april, Q~V4)
+lm.chir.vp <- lm(data = seasonal.chir.mean.year.chir, Q~V4)
+
+library(tidyr)
+library(dplyr)
+prediction.chir.september <- lm.chir.september %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.chir.mean.september$Group.1))
+
+prediction.chir.august <- lm.chir.august %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.chir.mean.august$Group.1))
+
+prediction.chir.july <- lm.chir.july %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.chir.mean.july$Group.1))
+
+prediction.chir.june <- lm.chir.june %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.chir.mean.june$Group.1))
+
+prediction.chir.vp <- lm.chir.vp %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.chir.mean.year.chir$Group.1))
+
+geom_line(data = prediction.chir.july, aes(x = x, y = fit, col = "july"))
+
+ggplot(seasonal.chir.mean.year.chir, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.chir.vp, aes(x = x, y = fit, col = "prediction.chir"))
+ggplot(seasonal.chir.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.chir.september, aes(x = x, y = fit, col = "september"))+ geom_line(data = prediction.chir.august, aes(x = x, y = fit, col = "august")) + geom_line(data = prediction.chir.july, aes(x = x, y = fit, col = "july")) +geom_line(data = prediction.chir.june, aes(x = x, y = fit, col = "june"))
+
+
 ####
 ggplot(seasonal.chir.mean.year.chir, aes(x = V4, y = Q))  + geom_point()
 
