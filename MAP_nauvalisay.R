@@ -132,7 +132,7 @@ seasonal.nau.mean.september$Month<-c("September")
 
 year.nauly.mean.Month<- rbind(seasonal.nau.mean.april,seasonal.nau.mean.may,seasonal.nau.mean.june,seasonal.nau.mean.july,seasonal.nau.mean.august,seasonal.nau.mean.september)
 #Cbind aber davor Group1 umbennen zu den jeweiligen Monatsnamen
-seasonal.nau.mean.year.nau<- aggregate(omit_nau.total[, 5:6], list(omit_nau.total$year.nau), mean)
+seasonal.nau.mean.year<- aggregate(omit_nau.total[, 5:6], list(omit_nau.total$year.nau), mean)
 seasonal.nau.mean.Month<- aggregate(omit_nau.total[, 5:6], list(omit_nau.total$Month), mean)
 
 ##model selection
@@ -141,11 +141,47 @@ model.nau.total <- lm(data = omit_nau.total, Q~V4)
 model.seasonal.nau.year.nau<-lm(data = omit_nau.total, Q ~ V4)
 model.seasonal.nau.Month <-lm(data = seasonal.nau.mean.Month, Q ~ V4)
 ##model.seasonal.nau.Month is the good one
+##Ab hier neu 25/02/2020
+lm.nau.september <- lm(data = seasonal.nau.mean.september, Q~V4)
+lm.nau.august <- lm(data = seasonal.nau.mean.august, Q~V4)
+lm.nau.july <- lm(data = seasonal.nau.mean.july, Q~V4)
+lm.nau.june <- lm(data = seasonal.nau.mean.june, Q~V4)
+lm.nau.may <- lm(data = seasonal.nau.mean.may, Q~V4)
+lm.nau.april <- lm(data = seasonal.nau.mean.april, Q~V4)
+lm.nau.vp <- lm(data = seasonal.nau.mean.year, Q~V4)
+
+library(tidyr)
+library(dplyr)
+prediction.nau.september <- lm.nau.september %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.nau.mean.september$Group.1))
+
+prediction.nau.august <- lm.nau.august %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.nau.mean.august$Group.1))
+
+prediction.nau.july <- lm.nau.july %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.nau.mean.july$Group.1))
+
+prediction.nau.june <- lm.nau.june %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.nau.mean.june$Group.1))
+
+prediction.nau.vp <- lm.nau.vp %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(seasonal.nau.mean.year$Group.1))
+
+geom_line(data = prediction.nau.july, aes(x = x, y = fit, col = "july"))
+
+ggplot(seasonal.nau.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.nau.vp, aes(x = x, y = fit, col = "prediction"))
+ggplot(seasonal.nau.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.nau.september, aes(x = x, y = fit, col = "september"))+ geom_line(data = prediction.nau.august, aes(x = x, y = fit, col = "august")) + geom_line(data = prediction.nau.july, aes(x = x, y = fit, col = "july")) +geom_line(data = prediction.nau.june, aes(x = x, y = fit, col = "june"))
+
 ####
-ggplot(seasonal.nau.mean.year.nau, aes(x = V4, y = Q))  + geom_point()
+ggplot(seasonal.nau.mean.year, aes(x = V4, y = Q))  + geom_point()
 
 ggplot(seasonal.nau.mean.Month, aes(x = V4, y= Q, col= Group.1)) + geom_point() + geom_abline(slope = 0.08981, intercept = 5.09004)
-ggplot(seasonal.nau.mean.year.nau, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
+ggplot(seasonal.nau.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
 ggplot(year.nauly.mean.Month, aes(x = Group.1, y = Q)) + geom_line(aes(col = Month)) + geom_point(aes(col = Month))
 ggplot(omit_nau.total, aes(x = V4, y= Q)) + geom_point() + geom_abline(slope = 0.083307, intercept = 5.179838 , col = 2)
 
