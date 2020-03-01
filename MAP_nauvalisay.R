@@ -148,7 +148,7 @@ lm.nau.july <- lm(data = seasonal.nau.mean.july, Q~V4)
 lm.nau.june <- lm(data = seasonal.nau.mean.june, Q~V4)
 lm.nau.may <- lm(data = seasonal.nau.mean.may, Q~V4)
 lm.nau.april <- lm(data = seasonal.nau.mean.april, Q~V4)
-lm.nau.vp <- lm(data = seasonal.nau.mean.year, Q~V4)
+lm.nau.vp <- lm(data = omit_nau.total, Q~V4)
 
 library(tidyr)
 library(dplyr)
@@ -170,21 +170,23 @@ prediction.nau.june <- lm.nau.june %>%
 
 prediction.nau.vp <- lm.nau.vp %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.nau.mean.year$Group.1))
+  as.data.frame() %>% mutate(x = sample(omit_nau.total$year.nau))
+nau.mean.p.vp<-aggregate(prediction.nau.vp[, 1], list(prediction.nau.vp$x), mean)##das ist richtig
 
 geom_line(data = prediction.nau.july, aes(x = x, y = fit, col = "july"))
 
-ggplot(seasonal.nau.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.nau.vp, aes(x = x, y = fit, col = "prediction"))
+p.nau<-ggplot(seasonal.nau.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = nau.mean.p.vp, aes(x = Group.1, y = x, col = "prediction"))+ xlab("year")
+p.nau
+summary(lm.nau.vp)
 ggplot(seasonal.nau.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.nau.september, aes(x = x, y = fit, col = "september"))+ geom_line(data = prediction.nau.august, aes(x = x, y = fit, col = "august")) + geom_line(data = prediction.nau.july, aes(x = x, y = fit, col = "july")) +geom_line(data = prediction.nau.june, aes(x = x, y = fit, col = "june"))
 
 ####
 ggplot(seasonal.nau.mean.year, aes(x = V4, y = Q))  + geom_point()
 
 ggplot(seasonal.nau.mean.Month, aes(x = V4, y= Q, col= Group.1)) + geom_point() + geom_abline(slope = 0.08981, intercept = 5.09004)
-ggplot(seasonal.nau.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
 ggplot(year.nauly.mean.Month, aes(x = Group.1, y = Q)) + geom_line(aes(col = Month)) + geom_point(aes(col = Month))
-ggplot(omit_nau.total, aes(x = V4, y= Q)) + geom_point() + geom_abline(slope = 0.083307, intercept = 5.179838 , col = 2)
+p.line.nau<-ggplot(omit_nau.total, aes(x = V4, y= Q)) + geom_point() + geom_abline(slope = 0.083307, intercept = 5.179838 , col = 2)
 
-summary(model.seasonal.nau.Month)
-summary(model.seasonal.nau.year.nau)
-summary(model.nau.total)
+nau.year.p<-ggplot(seasonal.nau.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
+p.nau<-ggplot(seasonal.nau.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.nau.vp, aes(x = x, y = fit, col = "prediction"))+ xlab("year") + ggtitle("Sidjak Nauvalisay")
+seasonal.nau.mean.year$Area <- c("sidjak_nauvalisay")
