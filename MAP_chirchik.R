@@ -147,7 +147,7 @@ lm.chir.july <- lm(data = seasonal.chir.mean.july, Q~V4)
 lm.chir.june <- lm(data = seasonal.chir.mean.june, Q~V4)
 lm.chir.may <- lm(data = seasonal.chir.mean.may, Q~V4)
 lm.chir.april <- lm(data = seasonal.chir.mean.april, Q~V4)
-lm.chir.vp <- lm(data = seasonal.chir.mean.year.chir, Q~V4)
+lm.chir.vp <- lm(data = omit_chir.total, Q~V4)
 
 library(tidyr)
 library(dplyr)
@@ -169,11 +169,15 @@ prediction.chir.june <- lm.chir.june %>%
 
 prediction.chir.vp <- lm.chir.vp %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.chir.mean.year.chir$Group.1))
+  as.data.frame() %>% mutate(x = sample(omit_chir.total$year.chir))
+chir.mean.p.vp<-aggregate(prediction.chir.vp[, 1], list(prediction.chir.vp$x), mean)##das ist richtig
+
 
 geom_line(data = prediction.chir.july, aes(x = x, y = fit, col = "july"))
 
-ggplot(seasonal.chir.mean.year.chir, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.chir.vp, aes(x = x, y = fit, col = "prediction.chir"))
+p.chir<-ggplot(seasonal.chir.mean.year.chir, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = chir.mean.p.vp, aes(x = Group.1, y = x, col = "prediction.chir")) + xlab("year")
+p.chir
+summary(lm.chir.vp)
 ggplot(seasonal.chir.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.chir.september, aes(x = x, y = fit, col = "september"))+ geom_line(data = prediction.chir.august, aes(x = x, y = fit, col = "august")) + geom_line(data = prediction.chir.july, aes(x = x, y = fit, col = "july")) +geom_line(data = prediction.chir.june, aes(x = x, y = fit, col = "june"))
 
 
@@ -183,8 +187,12 @@ ggplot(seasonal.chir.mean.year.chir, aes(x = V4, y = Q))  + geom_point()
 ggplot(seasonal.chir.mean.Month, aes(x = V4, y= Q, col= Group.1)) + geom_point() + geom_abline(slope = 0.665, intercept = 341.047)
 ggplot(seasonal.chir.mean.year.chir, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
 ggplot(year.chirly.mean.Month, aes(x = Group.1, y = Q)) + geom_line(aes(col = Month)) + geom_point(aes(col = Month))
-ggplot(omit_chir.total, aes(x = V4, y= Q)) + geom_point() + geom_abline(slope = 0.9614, intercept = 336.2887 , col = 2)
+p.line.chir<-ggplot(omit_chir.total, aes(x = V4, y= Q)) + geom_point() + geom_abline(slope = 0.9614, intercept = 336.2887 , col = 2)
+
+p.chir<-ggplot(seasonal.chir.mean.year.chir, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.chir.vp, aes(x = x, y = fit, col = "prediction.chir")) + xlab("year") + ggtitle("Pritok Chirchik")
+chir.year.p<-ggplot(seasonal.chir.mean.year.chir, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
+seasonal.chir.mean.year.chir$Area <- c("pritok_chirchik")
 
 summary(model.seasonal.chir.Month)
-summary(model.seasonal.chir.year.chir)
+summary(model.seasonal.chir.year.chir) 
 summary(model.chir.total)
