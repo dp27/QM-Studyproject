@@ -88,6 +88,7 @@ seasonal.mean.september<- aggregate(september.year[, 5:6], list(september.year$y
 seasonal.mean.september$Month<-c("September") 
 
 yearly.mean.month<- rbind(seasonal.mean.april,seasonal.mean.may,seasonal.mean.june,seasonal.mean.july,seasonal.mean.august,seasonal.mean.september)
+##model von yearly mean month machen und plotten
 
 #Cbind aber davor Group1 umbennen zu den jeweiligen Monatsnamen
 seasonal.mean.year<- aggregate(omit_total[, 5:6], list(omit_total$year), mean)
@@ -99,6 +100,11 @@ model.total <- lm(data = omit_total, Q~V4)
 model.seasonal.year<-lm(data = omit_total, Q ~ V4)
 model.seasonal.month <-lm(data = seasonal.mean.month, Q ~ V4)
 
+lm.months <- lm(data = yearly.mean.month, Q ~ V4)
+amu_line_p <-ggplot(yearly.mean.month, aes(x=V4, y = Q)) + geom_point() + geom_abline(slope = -24.388, intercept = 2193.698, col="red") 
+amu_line_p
+summary(lm.months) ##verwenden
+
 ##Diese Modelle für uncertainty bands mit average seasonal discharge
 ##Ab hier in die anderen Datensätze kopieren und einfügen 25/02/2020
 lm.september <- lm(data = seasonal.mean.september, Q~V4)
@@ -107,11 +113,12 @@ lm.july <- lm(data = seasonal.mean.july, Q~V4)
 lm.june <- lm(data = seasonal.mean.june, Q~V4)
 lm.may <- lm(data = seasonal.mean.may, Q~V4)
 lm.april <- lm(data = seasonal.mean.april, Q~V4)
-lm.vp <- lm(data = seasonal.mean.year, Q~V4)
+lm.vp <- lm(data = omit_total, Q~V4)
+summary(lm.vp)
  
 library(tidyr)
 library(dplyr)
-prediction.september <- lm.september %>%
+prediction.september <- lm.september %>%##von hier aus falsch; andere berichtigen, siehe mean.p.vp
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(seasonal.mean.september$Group.1))
 
@@ -125,17 +132,21 @@ prediction.july <- lm.july %>%
 
 prediction.june <- lm.june %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.mean.june$Group.1))
+  as.data.frame() %>% mutate(x = sample(seasonal.mean.june$Group.1))##bis hier falsch
 
 prediction.vp <- lm.vp %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.mean.year$Group.1))
+  as.data.frame() %>% mutate(x = sample(omit_total$year))
+mean.p.vp<-aggregate(prediction.vp[, 1], list(prediction.vp$x), mean)##das ist richtig
 
 geom_line(data = prediction.july, aes(x = x, y = fit, col = "july"))
 
-ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.vp, aes(x = x, y = fit, col = "prediction"))
+p.amu<-ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = mean.p.vp, aes(x = Group.1, y = x, col = "prediction")) + xlab("year")
+p.amu
+summary(lm.vp)
 ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.september, aes(x = x, y = fit, col = "september"))+ geom_line(data = prediction.august, aes(x = x, y = fit, col = "august")) + geom_line(data = prediction.july, aes(x = x, y = fit, col = "july")) +geom_line(data = prediction.june, aes(x = x, y = fit, col = "june"))
 
+?geom_ribbon()
 plot(seasonal.mean.april$V4, seasonal.mean.april$Q)
 ##bis hier kopieren und dann einfügen
 ##model.seasonal.month is the good one
@@ -143,12 +154,12 @@ plot(seasonal.mean.april$V4, seasonal.mean.april$Q)
 ggplot(seasonal.mean.month, aes(x = V4, y= Q, col= Group.1)) + geom_point() + geom_abline(slope = -36.30, intercept = 2367.81)
 ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
 ggplot(yearly.mean.month, aes(x = Group.1, y = Q)) + geom_line(aes(col = Month)) + geom_point(aes(col = Month))
-ggplot(omit_total, aes(x = V4, y= Q)) + geom_point() + geom_abline(slope = -23.548, intercept = 2209.961, col = 2)
+p.line.amu<-ggplot(omit_total, aes(x = V4, y= Q)) + geom_point() + geom_abline(slope = -23.548, intercept = 2209.961, col = 2)
 
-summary(model.seasonal.month)
-summary(model.seasonal.year)
-summary(model.total)
-
+p.amu<-ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.vp, aes(x = x, y = fit, col = "prediction")) + xlab("year") + ggtitle("Amudarya Kerki")
+amu.year.p <- ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
+amu.year.p
+seasonal.mean.year$Area <- c("amudarya_kerki")
 ##########
 
 #obsolete
