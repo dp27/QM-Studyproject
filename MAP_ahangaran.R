@@ -147,7 +147,7 @@ lm.aha.july <- lm(data = seasonal.mean.aha.july, Q~V4)
 lm.aha.june <- lm(data = seasonal.mean.aha.june, Q~V4)
 lm.aha.may <- lm(data = seasonal.mean.aha.may, Q~V4)
 lm.aha.april <- lm(data = seasonal.mean.aha.april, Q~V4)
-lm.aha.vp <- lm(data = seasonal.aha.mean.year, Q~V4)
+lm.aha.vp <- lm(data = omit_aha.total, Q~V4)
 
 library(tidyr)
 library(dplyr)
@@ -167,13 +167,16 @@ prediction.ahajune <- lm.aha.june %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(seasonal.mean.aha.june$Group.1))
 
-prediction.ahavp <- lm.aha.vp %>%
+prediction.aha.vp <- lm.aha.vp %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.aha.mean.year$Group.1))
+  as.data.frame() %>% mutate(x = sample(omit_aha.total$year.aha))
+aha.mean.p.vp<-aggregate(prediction.aha.vp[, 1], list(prediction.aha.vp$x), mean)##das ist richtig
 
 geom_line(data = prediction.ahajuly, aes(x = x, y = fit, col = "july"))
 
-ggplot(seasonal.aha.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.ahavp, aes(x = x, y = fit, col = "prediction"))
+p.aha<-ggplot(seasonal.aha.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = aha.mean.p.vp, aes(x = Group.1, y = x, col = "prediction")) + xlab("year")
+p.aha
+summary(lm.aha.vp)
 ggplot(seasonal.mean.aha.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.ahaseptember, aes(x = x, y = fit, col = "september"))+ geom_line(data = prediction.ahaaugust, aes(x = x, y = fit, col = "august")) + geom_line(data = prediction.ahajuly, aes(x = x, y = fit, col = "july")) +geom_line(data = prediction.ahajune, aes(x = x, y = fit, col = "june"))
 
 plot(seasonal.mean.aha.april$V4, seasonal.mean.aha.april$Q)
@@ -184,8 +187,9 @@ ggplot(seasonal.aha.mean.year, aes(x = V4, y = Q))  + geom_point()
 ggplot(seasonal.aha.mean.Month, aes(x = V4, y= Q, col= Group.1)) + geom_point() + geom_abline(slope = 0.9439, intercept = 19.3847)
 ggplot(seasonal.aha.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
 ggplot(year.ahaly.mean.Month, aes(x = Group.1, y = Q)) + geom_line(aes(col = Month)) + geom_point(aes(col = Month))
-ggplot(omit_aha.total, aes(x = V4, y= Q)) + geom_point() + geom_abline(slope = 0.85601, intercept = 20.73184 , col = 2)
+p.line.aha<-ggplot(omit_aha.total, aes(x = V4, y= Q)) + geom_point() + geom_abline(slope = 0.84913, intercept = 20.98355 , col = "red")
 
-summary(model.seasonal.aha.Month)
-summary(model.seasonal.aha.year.aha)
-summary(model.aha.total)
+p.aha<-ggplot(seasonal.aha.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = aha.mean.p.vp, aes(x = Group.1, y = x, col = "prediction")) + xlab("year")
+aha.year.p<-ggplot(seasonal.aha.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
+aha.year.p
+seasonal.aha.mean.year$Area <- c("ahangaran_irtash")
