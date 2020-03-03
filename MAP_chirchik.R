@@ -141,39 +141,44 @@ model.seasonal.chir.year.chir<-lm(data = omit_chir.total, Q ~ V4)
 model.seasonal.chir.Month <-lm(data = seasonal.chir.mean.Month, Q ~ V4)
 ##model.seasonal.chir.Month is the good one
 ##NEU ab hier 25/02/2020
-lm.chir.september <- lm(data = seasonal.chir.mean.september, Q~V4)
-lm.chir.august <- lm(data = seasonal.chir.mean.august, Q~V4)
-lm.chir.july <- lm(data = seasonal.chir.mean.july, Q~V4)
-lm.chir.june <- lm(data = seasonal.chir.mean.june, Q~V4)
-lm.chir.may <- lm(data = seasonal.chir.mean.may, Q~V4)
-lm.chir.april <- lm(data = seasonal.chir.mean.april, Q~V4)
+lm.chir.september <- lm(data = september.year.chir, Q~V4)
+lm.chir.august <- lm(data = august.year.chir, Q~V4)
+lm.chir.july <- lm(data = july.year.chir, Q~V4)
+lm.chir.june <- lm(data = june.year.chir, Q~V4)
+lm.chir.may <- lm(data = may.year.chir, Q~V4)
+lm.chir.april <- lm(data = april.year.chir, Q~V4)
 lm.chir.vp <- lm(data = omit_chir.total, Q~V4)
 
 library(tidyr)
 library(dplyr)
 prediction.chir.september <- lm.chir.september %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.chir.mean.september$Group.1))
+  as.data.frame() %>% mutate(x = sample(september.year.chir$year,chir))
 
 prediction.chir.august <- lm.chir.august %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.chir.mean.august$Group.1))
+  as.data.frame() %>% mutate(x = sample(august.year.chir$year.chir))
 
 prediction.chir.july <- lm.chir.july %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.chir.mean.july$Group.1))
+  as.data.frame() %>% mutate(x = sample(july.year.chir$year.chir))
 
 prediction.chir.june <- lm.chir.june %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.chir.mean.june$Group.1))
+  as.data.frame() %>% mutate(x = sample(june.year.chir$year.chir))
+
+prediction.chir.may <- lm.chir.may %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(may.year.chir$year.chir))
+
+prediction.chir.april <- lm.chir.april %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(april.year.chir$year.chir))
 
 prediction.chir.vp <- lm.chir.vp %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(omit_chir.total$year.chir))
-chir.mean.p.vp<-aggregate(prediction.chir.vp[, 1], list(prediction.chir.vp$x), mean)##das ist richtig
-
-
-geom_line(data = prediction.chir.july, aes(x = x, y = fit, col = "july"))
+chir.mean.p.vp<-aggregate(prediction.chir.vp[, 1:3], list(prediction.chir.vp$x), mean)##das ist richtig
 
 p.chir<-ggplot(seasonal.chir.mean.year.chir, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = chir.mean.p.vp, aes(x = Group.1, y = x, col = "prediction.chir")) + xlab("year")
 p.chir
