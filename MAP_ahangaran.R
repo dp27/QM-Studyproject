@@ -141,45 +141,52 @@ model.seasonal.aha.year.aha<-lm(data = omit_aha.total, Q ~ V4)
 model.seasonal.aha.Month <-lm(data = seasonal.aha.mean.Month, Q ~ V4)
 ##model.seasonal.aha.Month is the good one
 ##ab hier neu 25/02/2020
-lm.aha.september <- lm(data = seasonal.mean.aha.september, Q~V4)
-lm.aha.august <- lm(data = seasonal.mean.aha.august, Q~V4)
-lm.aha.july <- lm(data = seasonal.mean.aha.july, Q~V4)
-lm.aha.june <- lm(data = seasonal.mean.aha.june, Q~V4)
-lm.aha.may <- lm(data = seasonal.mean.aha.may, Q~V4)
-lm.aha.april <- lm(data = seasonal.mean.aha.april, Q~V4)
+lm.aha.september <- lm(data = september.year.aha, Q~V4)
+lm.aha.august <- lm(data = august.year.aha, Q~V4)
+lm.aha.july <- lm(data = july.year.aha, Q~V4)
+lm.aha.june <- lm(data = june.year.aha, Q~V4)
+lm.aha.may <- lm(data = may.year.aha, Q~V4)
+lm.aha.april <- lm(data = april.year.aha, Q~V4)
 lm.aha.vp <- lm(data = omit_aha.total, Q~V4)
 
 library(tidyr)
 library(dplyr)
-prediction.ahaseptember <- lm.aha.september %>%
+prediction.aha.september <- lm.aha.september %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.mean.aha.september$Group.1))
+  as.data.frame() %>% mutate(x = sample(september.year.aha$year.aha))
 
-prediction.ahaaugust <- lm.aha.august %>%
+prediction.aha.august <- lm.aha.august %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.mean.aha.august$Group.1))
+  as.data.frame() %>% mutate(x = sample(august.year.aha$year.aha))
 
-prediction.ahajuly <- lm.aha.july %>%
+prediction.aha.july <- lm.aha.july %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.mean.aha.july$Group.1))
+  as.data.frame() %>% mutate(x = sample(july.year.aha$year.aha))
 
-prediction.ahajune <- lm.aha.june %>%
+prediction.aha.june <- lm.aha.june %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.mean.aha.june$Group.1))
+  as.data.frame() %>% mutate(x = sample(june.year.aha$year.aha))
+
+prediction.aha.may <- lm.aha.may %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(may.year.aha$year.aha))
+
+prediction.aha.april <- lm.aha.april %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(april.year.aha$year.aha))
+
 
 prediction.aha.vp <- lm.aha.vp %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(omit_aha.total$year.aha))
-aha.mean.p.vp<-aggregate(prediction.aha.vp[, 1], list(prediction.aha.vp$x), mean)##das ist richtig
-
-geom_line(data = prediction.ahajuly, aes(x = x, y = fit, col = "july"))
+aha.mean.p.vp<-aggregate(prediction.aha.vp[, 1:3], list(prediction.aha.vp$x), mean)##das ist richtig
 
 p.aha<-ggplot(seasonal.aha.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = aha.mean.p.vp, aes(x = Group.1, y = x, col = "prediction")) + xlab("year")
 p.aha
 summary(lm.aha.vp)
 ggplot(seasonal.mean.aha.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.ahaseptember, aes(x = x, y = fit, col = "september"))+ geom_line(data = prediction.ahaaugust, aes(x = x, y = fit, col = "august")) + geom_line(data = prediction.ahajuly, aes(x = x, y = fit, col = "july")) +geom_line(data = prediction.ahajune, aes(x = x, y = fit, col = "june"))
 
-plot(seasonal.mean.aha.april$V4, seasonal.mean.aha.april$Q)
+plot(seasonal.aha.mean.april$V4, seasonal.aha.mean.april$Q)
 
 ####
 ggplot(seasonal.aha.mean.year, aes(x = V4, y = Q))  + geom_point()
