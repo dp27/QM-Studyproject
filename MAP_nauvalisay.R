@@ -142,38 +142,44 @@ model.seasonal.nau.year.nau<-lm(data = omit_nau.total, Q ~ V4)
 model.seasonal.nau.Month <-lm(data = seasonal.nau.mean.Month, Q ~ V4)
 ##model.seasonal.nau.Month is the good one
 ##Ab hier neu 25/02/2020
-lm.nau.september <- lm(data = seasonal.nau.mean.september, Q~V4)
-lm.nau.august <- lm(data = seasonal.nau.mean.august, Q~V4)
-lm.nau.july <- lm(data = seasonal.nau.mean.july, Q~V4)
-lm.nau.june <- lm(data = seasonal.nau.mean.june, Q~V4)
-lm.nau.may <- lm(data = seasonal.nau.mean.may, Q~V4)
-lm.nau.april <- lm(data = seasonal.nau.mean.april, Q~V4)
+lm.nau.september <- lm(data = september.year.nau, Q~V4)
+lm.nau.august <- lm(data = august.year.nau, Q~V4)
+lm.nau.july <- lm(data = july.year.nau, Q~V4)
+lm.nau.june <- lm(data = june.year.nau, Q~V4)
+lm.nau.may <- lm(data = may.year.nau, Q~V4)
+lm.nau.april <- lm(data = april.year.nau, Q~V4)
 lm.nau.vp <- lm(data = omit_nau.total, Q~V4)
 
 library(tidyr)
 library(dplyr)
 prediction.nau.september <- lm.nau.september %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.nau.mean.september$Group.1))
+  as.data.frame() %>% mutate(x = sample(september.year.nau$year.nau))
 
 prediction.nau.august <- lm.nau.august %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.nau.mean.august$Group.1))
+  as.data.frame() %>% mutate(x = sample(august.year.nau$year.nau))
 
 prediction.nau.july <- lm.nau.july %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.nau.mean.july$Group.1))
+  as.data.frame() %>% mutate(x = sample(july.year.nau$year.nau))
 
 prediction.nau.june <- lm.nau.june %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.nau.mean.june$Group.1))
+  as.data.frame() %>% mutate(x = sample(june.year.nau$year.nau))
+
+prediction.nau.may <- lm.nau.may %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(may.year.nau$year.nau))
+
+prediction.nau.april<- lm.nau.april %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(april.year.nau$year.nau))
 
 prediction.nau.vp <- lm.nau.vp %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(omit_nau.total$year.nau))
-nau.mean.p.vp<-aggregate(prediction.nau.vp[, 1], list(prediction.nau.vp$x), mean)##das ist richtig
-
-geom_line(data = prediction.nau.july, aes(x = x, y = fit, col = "july"))
+nau.mean.p.vp<-aggregate(prediction.nau.vp[, 1:3], list(prediction.nau.vp$x), mean)##das ist richtig
 
 p.nau<-ggplot(seasonal.nau.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = nau.mean.p.vp, aes(x = Group.1, y = x, col = "prediction"))+ xlab("year")
 p.nau
