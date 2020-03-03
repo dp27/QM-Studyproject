@@ -107,39 +107,61 @@ summary(lm.months) ##verwenden
 
 ##Diese Modelle für uncertainty bands mit average seasonal discharge
 ##Ab hier in die anderen Datensätze kopieren und einfügen 25/02/2020
-lm.september <- lm(data = seasonal.mean.september, Q~V4)
-lm.august <- lm(data = seasonal.mean.august, Q~V4)
-lm.july <- lm(data = seasonal.mean.july, Q~V4)
-lm.june <- lm(data = seasonal.mean.june, Q~V4)
-lm.may <- lm(data = seasonal.mean.may, Q~V4)
-lm.april <- lm(data = seasonal.mean.april, Q~V4)
+lm.september <- lm(data = september.year, Q~V4)
+lm.august <- lm(data = august.year, Q~V4)
+lm.july <- lm(data = july.year, Q~V4)
+lm.june <- lm(data = june.year, Q~V4)
+lm.may <- lm(data = may.year, Q~V4)
+lm.april <- lm(data = april.year, Q~V4)
 lm.vp <- lm(data = omit_total, Q~V4)
 summary(lm.vp)
  
 library(tidyr)
 library(dplyr)
-prediction.september <- lm.september %>%##von hier aus falsch; andere berichtigen, siehe mean.p.vp
+prediction.september <- lm.september %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.mean.september$Group.1))
+  as.data.frame() %>% mutate(x = sample(september.year$year))
+mean.p.september<-aggregate(prediction.september[, 1:3], list(prediction.september$x), mean)
+mean.p.september$month<-c("September")
 
 prediction.august <- lm.august %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.mean.august$Group.1))
+  as.data.frame() %>% mutate(x = sample(august.year$year))
+mean.p.august<-aggregate(prediction.august[, 1:3], list(prediction.august$x), mean)
+mean.p.august$month<-c("August")
 
 prediction.july <- lm.july %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.mean.july$Group.1))
+  as.data.frame() %>% mutate(x = sample(july.year$year))
+mean.p.july<-aggregate(prediction.july[, 1:3], list(prediction.july$x), mean)
+mean.p.july$month<-c("July")
 
 prediction.june <- lm.june %>%
   predict(., interval = 'confidence') %>%
-  as.data.frame() %>% mutate(x = sample(seasonal.mean.june$Group.1))##bis hier falsch
+  as.data.frame() %>% mutate(x = sample(june.year$year))
+mean.p.june<-aggregate(prediction.june[, 1:3], list(prediction.june$x), mean)
+mean.p.june$month<-c("June")
+
+prediction.may <- lm.may %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(may.year$year))
+mean.p.may<-aggregate(prediction.may[, 1:3], list(prediction.may$x), mean)
+mean.p.may$month<-c("May")
+
+prediction.april <- lm.april %>%
+  predict(., interval = 'confidence') %>%
+  as.data.frame() %>% mutate(x = sample(april.year$year))
+mean.p.april<-aggregate(prediction.april[, 1:3], list(prediction.april$x), mean)
+mean.p.april$month<-c("April")
 
 prediction.vp <- lm.vp %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(omit_total$year))
-mean.p.vp<-aggregate(prediction.vp[, 1], list(prediction.vp$x), mean)##das ist richtig
+mean.p.vp<-aggregate(prediction.vp[, 1:3], list(prediction.vp$x), mean)##das ist richtig
 
-geom_line(data = prediction.july, aes(x = x, y = fit, col = "july"))
+pred.all.months <- rbind(mean.p.april,mean.p.may,mean.p.june,mean.p.july,mean.p.august,mean.p.september)
+p.amu.july<-ggplot(seasonal.mean.july, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = mean.p.july, aes(x = Group.1, y = fit, col = "prediction")) + xlab("year")
+p.amu.july
 
 p.amu<-ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = mean.p.vp, aes(x = Group.1, y = x, col = "prediction")) + xlab("year")
 p.amu
