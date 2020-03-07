@@ -155,31 +155,46 @@ library(dplyr)
 prediction.nau.september <- lm.nau.september %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(september.year.nau$year.nau))
+mean.p.september.nau<-aggregate(prediction.nau.september[, 1:3], list(prediction.nau.september$x), mean)
+mean.p.september.nau$month<-c("September")
 
 prediction.nau.august <- lm.nau.august %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(august.year.nau$year.nau))
+mean.p.august.nau<-aggregate(prediction.nau.august[, 1:3], list(prediction.nau.august$x), mean)
+mean.p.august.nau$month<-c("August")
 
 prediction.nau.july <- lm.nau.july %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(july.year.nau$year.nau))
+mean.p.july.nau<-aggregate(prediction.nau.july[, 1:3], list(prediction.nau.july$x), mean)
+mean.p.july.nau$month<-c("July")
 
 prediction.nau.june <- lm.nau.june %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(june.year.nau$year.nau))
+mean.p.june.nau<-aggregate(prediction.nau.june[, 1:3], list(prediction.nau.june$x), mean)
+mean.p.june.nau$month<-c("June")
 
 prediction.nau.may <- lm.nau.may %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(may.year.nau$year.nau))
+mean.p.may.nau<-aggregate(prediction.nau.may[, 1:3], list(prediction.nau.may$x), mean)
+mean.p.may.nau$month<-c("May")
 
 prediction.nau.april<- lm.nau.april %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(april.year.nau$year.nau))
+mean.p.april.nau<-aggregate(prediction.nau.april[, 1:3], list(prediction.nau.april$x), mean)
+mean.p.april.nau$month<-c("April")
 
 prediction.nau.vp <- lm.nau.vp %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(omit_nau.total$year.nau))
 nau.mean.p.vp<-aggregate(prediction.nau.vp[, 1:3], list(prediction.nau.vp$x), mean)##das ist richtig
+
+pred.all.months.nau <- rbind(mean.p.april.nau,mean.p.may.nau,mean.p.june.nau,mean.p.july.nau,mean.p.august.nau,mean.p.september.nau)
+mean.pred.month.nau <- aggregate(pred.all.months.nau[, 2:4], list(pred.all.months.nau$month), mean)
 
 p.nau<-ggplot(seasonal.nau.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = nau.mean.p.vp, aes(x = Group.1, y = x, col = "prediction"))+ xlab("year")
 p.nau
