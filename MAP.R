@@ -160,6 +160,8 @@ prediction.vp <- lm.vp %>%
 mean.p.vp<-aggregate(prediction.vp[, 1:3], list(prediction.vp$x), mean)##das ist richtig
 
 pred.all.months <- rbind(mean.p.april,mean.p.may,mean.p.june,mean.p.july,mean.p.august,mean.p.september)
+mean.pred.month <- aggregate(pred.all.months[, 2:4], list(pred.all.months$month), mean)
+
 p.amu.july<-ggplot(seasonal.mean.july, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = mean.p.july, aes(x = Group.1, y = fit, col = "prediction")) + xlab("year")
 p.amu.july
 

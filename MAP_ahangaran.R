@@ -154,32 +154,46 @@ library(dplyr)
 prediction.aha.september <- lm.aha.september %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(september.year.aha$year.aha))
+mean.p.september.aha<-aggregate(prediction.aha.september[, 1:3], list(prediction.aha.september$x), mean)
+mean.p.september.aha$month<-c("September")
 
 prediction.aha.august <- lm.aha.august %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(august.year.aha$year.aha))
+mean.p.august.aha<-aggregate(prediction.aha.august[, 1:3], list(prediction.aha.august$x), mean)
+mean.p.august.aha$month<-c("August")
 
 prediction.aha.july <- lm.aha.july %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(july.year.aha$year.aha))
+mean.p.july.aha<-aggregate(prediction.aha.july[, 1:3], list(prediction.aha.july$x), mean)
+mean.p.july.aha$month<-c("July")
 
 prediction.aha.june <- lm.aha.june %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(june.year.aha$year.aha))
+mean.p.june.aha<-aggregate(prediction.aha.june[, 1:3], list(prediction.aha.june$x), mean)
+mean.p.june.aha$month<-c("June")
 
 prediction.aha.may <- lm.aha.may %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(may.year.aha$year.aha))
+mean.p.may.aha<-aggregate(prediction.aha.may[, 1:3], list(prediction.aha.may$x), mean)
+mean.p.may.aha$month<-c("May")
 
 prediction.aha.april <- lm.aha.april %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(april.year.aha$year.aha))
-
+mean.p.april.aha<-aggregate(prediction.aha.april[, 1:3], list(prediction.aha.april$x), mean)
+mean.p.april.aha$month<-c("April")
 
 prediction.aha.vp <- lm.aha.vp %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(omit_aha.total$year.aha))
 aha.mean.p.vp<-aggregate(prediction.aha.vp[, 1:3], list(prediction.aha.vp$x), mean)##das ist richtig
+
+pred.all.months.aha <- rbind(mean.p.april.aha,mean.p.may.aha,mean.p.june.aha,mean.p.july.aha,mean.p.august.aha,mean.p.september.aha)
+mean.pred.month.aha <- aggregate(pred.all.months.aha[, 2:4], list(pred.all.months.aha$month), mean)
 
 p.aha<-ggplot(seasonal.aha.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = aha.mean.p.vp, aes(x = Group.1, y = x, col = "prediction")) + xlab("year")
 p.aha
