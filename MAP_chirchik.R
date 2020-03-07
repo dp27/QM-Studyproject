@@ -154,31 +154,46 @@ library(dplyr)
 prediction.chir.september <- lm.chir.september %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(september.year.chir$year,chir))
+mean.p.september.chir<-aggregate(prediction.chir.september[, 1:3], list(prediction.chir.september$x), mean)
+mean.p.september.chir$month<-c("September")
 
 prediction.chir.august <- lm.chir.august %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(august.year.chir$year.chir))
+mean.p.august.chir<-aggregate(prediction.chir.august[, 1:3], list(prediction.chir.august$x), mean)
+mean.p.august.chir$month<-c("August")
 
 prediction.chir.july <- lm.chir.july %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(july.year.chir$year.chir))
+mean.p.july.chir<-aggregate(prediction.chir.july[, 1:3], list(prediction.chir.july$x), mean)
+mean.p.july.chir$month<-c("July")
 
 prediction.chir.june <- lm.chir.june %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(june.year.chir$year.chir))
+mean.p.june.chir<-aggregate(prediction.chir.june[, 1:3], list(prediction.chir.june$x), mean)
+mean.p.june.chir$month<-c("June")
 
 prediction.chir.may <- lm.chir.may %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(may.year.chir$year.chir))
+mean.p.may.chir<-aggregate(prediction.chir.may[, 1:3], list(prediction.chir.may$x), mean)
+mean.p.may.chir$month<-c("May")
 
 prediction.chir.april <- lm.chir.april %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(april.year.chir$year.chir))
+mean.p.april.chir<-aggregate(prediction.chir.april[, 1:3], list(prediction.chir.april$x), mean)
+mean.p.april.chir$month<-c("April")
 
 prediction.chir.vp <- lm.chir.vp %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(omit_chir.total$year.chir))
 chir.mean.p.vp<-aggregate(prediction.chir.vp[, 1:3], list(prediction.chir.vp$x), mean)##das ist richtig
+
+pred.all.months.chir <- rbind(mean.p.april.chir,mean.p.may.chir,mean.p.june.chir,mean.p.july.chir,mean.p.august.chir,mean.p.september.chir)
+mean.pred.month.chir <- aggregate(pred.all.months.chir[, 2:4], list(pred.all.months.chir$month), mean)
 
 p.chir<-ggplot(seasonal.chir.mean.year.chir, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = chir.mean.p.vp, aes(x = Group.1, y = x, col = "prediction.chir")) + xlab("year")
 p.chir
