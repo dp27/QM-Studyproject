@@ -4,16 +4,32 @@ snow<-read.table("C:/Users/Darell/Desktop/Statistik MAP/amudarya_kerki_snow_clou
 
 snow$month<-rep(rep(c(1,2,3,4,5,6,7,8,9,10,11,12), times = c(31,28,31,30,31,30,31,31,30,31,30,31)),19)
 names(snow)[1]<-paste("year") 
+
+snow2<-snow
+snow2$V5<-NULL
+snow2$month[snow2$month == 1] <- NA
+snow2$month[snow2$month == 2] <- NA
+snow2$month[snow2$month == 4] <- NA
+snow2$month[snow2$month == 5] <- NA
+snow2$month[snow2$month == 6] <- NA
+snow2$month[snow2$month == 7] <- NA
+snow2$month[snow2$month == 8] <- NA
+snow2$month[snow2$month == 9] <- NA
+snow2$month[snow2$month == 10] <- NA
+snow2$month[snow2$month == 11] <- NA
+snow2$month[snow2$month == 12] <- NA
+snow2$V4[snow2$V4 == -9]<- NA
+omitted_snow<- na.omit(snow2)
+omitted_snow2<-aggregate(omitted_snow[, 2:4], list(omitted_snow$year), mean)
+names(omitted_snow2)[1]<-paste("year")
 #data preperation for merge
 ##Obsolete
 
-total<-merge(snow,drainage,by=c("month","year"))
+total<-merge(drainage,omitted_snow2,by=c("year"))
 total$V4[total$V4 == -9]<- NA
 total$V5 <- NULL
+names(total)[2]<-paste("month")
 omitted<-na.omit(total)
-
-monthly.mean<-aggregate(total[, 5:7], list(total$month), mean)
-yearly.mean<-aggregate(total[, 5:7], list(total$year), mean)
 
 ##data preperation for seasonal mean
 total2<-total
@@ -34,7 +50,7 @@ april.year$month[april.year$month == 7] <- NA
 april.year$month[april.year$month == 8] <- NA
 april.year$month[april.year$month == 9] <- NA
 april.year <- na.omit(april.year)
-seasonal.mean.april<- aggregate(april.year[, 5:6], list(april.year$year), mean)
+seasonal.mean.april<- aggregate(april.year[, 3:6], list(april.year$year), mean)
 seasonal.mean.april$Month<-c("April") 
 
 may.year<-omit_total
@@ -44,7 +60,7 @@ may.year$month[may.year$month == 7] <- NA
 may.year$month[may.year$month == 8] <- NA
 may.year$month[may.year$month == 9] <- NA
 may.year <- na.omit(may.year)
-seasonal.mean.may<- aggregate(may.year[, 5:6], list(may.year$year), mean)
+seasonal.mean.may<- aggregate(may.year[, 3:6], list(may.year$year), mean)
 seasonal.mean.may$Month<-c("May") 
 
 june.year<-omit_total
@@ -54,7 +70,7 @@ june.year$month[june.year$month == 7] <- NA
 june.year$month[june.year$month == 8] <- NA
 june.year$month[june.year$month == 9] <- NA
 june.year <- na.omit(june.year)
-seasonal.mean.june<- aggregate(june.year[, 5:6], list(june.year$year), mean)
+seasonal.mean.june<- aggregate(june.year[, 3:6], list(june.year$year), mean)
 seasonal.mean.june$Month<-c("June") 
 
 july.year<-omit_total
@@ -64,7 +80,7 @@ july.year$month[july.year$month == 6] <- NA
 july.year$month[july.year$month == 8] <- NA
 july.year$month[july.year$month == 9] <- NA
 july.year <- na.omit(july.year)
-seasonal.mean.july<- aggregate(july.year[, 5:6], list(july.year$year), mean)
+seasonal.mean.july<- aggregate(july.year[, 3:6], list(july.year$year), mean)
 seasonal.mean.july$Month<-c("July") 
 
 august.year<-omit_total
@@ -74,7 +90,7 @@ august.year$month[august.year$month == 6] <- NA
 august.year$month[august.year$month == 7] <- NA
 august.year$month[august.year$month == 9] <- NA
 august.year <- na.omit(august.year)
-seasonal.mean.august<- aggregate(august.year[, 5:6], list(august.year$year), mean)
+seasonal.mean.august<- aggregate(august.year[, 3:6], list(august.year$year), mean)
 seasonal.mean.august$Month<-c("August") 
 
 september.year<-omit_total
@@ -84,21 +100,19 @@ september.year$month[september.year$month == 6] <- NA
 september.year$month[september.year$month == 7] <- NA
 september.year$month[september.year$month == 8] <- NA
 september.year <- na.omit(september.year)
-seasonal.mean.september<- aggregate(september.year[, 5:6], list(september.year$year), mean)
+seasonal.mean.september<- aggregate(september.year[, 3:6], list(september.year$year), mean)
 seasonal.mean.september$Month<-c("September") 
 
 yearly.mean.month<- rbind(seasonal.mean.april,seasonal.mean.may,seasonal.mean.june,seasonal.mean.july,seasonal.mean.august,seasonal.mean.september)
 ##model von yearly mean month machen und plotten
 
 #Cbind aber davor Group1 umbennen zu den jeweiligen Monatsnamen
-seasonal.mean.year<- aggregate(omit_total[, 5:6], list(omit_total$year), mean)
-seasonal.mean.month<- aggregate(omit_total[, 5:6], list(omit_total$month), mean)
+seasonal.mean.year<- aggregate(omit_total[, 3:6], list(omit_total$year), mean)
+seasonal.mean.year$name <- c("amu")
+seasonal.mean.month<- aggregate(omit_total[, 3:6], list(omit_total$month), mean)
 
 ##model selection
 library(ggplot2)
-model.total <- lm(data = omit_total, Q~V4)
-model.seasonal.year<-lm(data = omit_total, Q ~ V4)
-model.seasonal.month <-lm(data = seasonal.mean.month, Q ~ V4)
 
 lm.months <- lm(data = yearly.mean.month, Q ~ V4)
 amu_line_p <-ggplot(yearly.mean.month, aes(x=V4, y = Q)) + geom_point() + geom_abline(slope = -24.388, intercept = 2193.698, col="red") 
@@ -115,9 +129,47 @@ lm.may <- lm(data = may.year, Q~V4)
 lm.april <- lm(data = april.year, Q~V4)
 lm.vp <- lm(data = omit_total, Q~V4)
 summary(lm.vp)
- 
+library(ggplot2) 
 library(tidyr)
 library(dplyr)
+pb.september <- lm.september %>%
+  predict(., interval = 'prediction') %>%
+  as.data.frame() %>% mutate(x = sample(september.year$year))
+mean.pb.september<-aggregate(prediction.september[, 1:3], list(prediction.september$x), mean)
+mean.pb.september$month<-c("September")
+
+pb.august <- lm.august %>%
+  predict(., interval = 'prediction') %>%
+  as.data.frame() %>% mutate(x = sample(august.year$year))
+mean.pb.august<-aggregate(prediction.august[, 1:3], list(prediction.august$x), mean)
+mean.pb.august$month<-c("august")
+
+pb.july <- lm.july %>%
+  predict(., interval = 'prediction') %>%
+  as.data.frame() %>% mutate(x = sample(july.year$year))
+mean.pb.july<-aggregate(prediction.july[, 1:3], list(prediction.july$x), mean)
+mean.pb.july$month<-c("july")
+
+pb.june <- lm.june %>%
+  predict(., interval = 'prediction') %>%
+  as.data.frame() %>% mutate(x = sample(june.year$year))
+mean.pb.june<-aggregate(prediction.june[, 1:3], list(prediction.june$x), mean)
+mean.pb.june$month<-c("june")
+
+pb.may <- lm.may %>%
+  predict(., interval = 'prediction') %>%
+  as.data.frame() %>% mutate(x = sample(may.year$year))
+mean.pb.may<-aggregate(prediction.may[, 1:3], list(prediction.may$x), mean)
+mean.pb.may$month<-c("may")
+
+pb.april <- lm.april %>%
+  predict(., interval = 'prediction') %>%
+  as.data.frame() %>% mutate(x = sample(april.year$year))
+mean.pb.april<-aggregate(prediction.april[, 1:3], list(prediction.april$x), mean)
+mean.pb.april$month<-c("april")
+
+
+##confidence bands
 prediction.september <- lm.september %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(september.year$year))
@@ -165,7 +217,7 @@ mean.pred.month <- aggregate(pred.all.months[, 2:4], list(pred.all.months$month)
 p.amu.july<-ggplot(seasonal.mean.july, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = mean.p.july, aes(x = Group.1, y = fit, col = "prediction")) + xlab("year")
 p.amu.july
 
-p.amu<-ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = mean.p.vp, aes(x = Group.1, y = x, col = "prediction")) + xlab("year")
+p.amu<-ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = mean.p.vp, aes(x = Group.1, y = fit, col = "prediction")) + xlab("year")
 p.amu
 summary(lm.vp)
 ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.september, aes(x = x, y = fit, col = "september"))+ geom_line(data = prediction.august, aes(x = x, y = fit, col = "august")) + geom_line(data = prediction.july, aes(x = x, y = fit, col = "july")) +geom_line(data = prediction.june, aes(x = x, y = fit, col = "june"))
@@ -175,15 +227,10 @@ plot(seasonal.mean.april$V4, seasonal.mean.april$Q)
 ##bis hier kopieren und dann einfügen
 ##model.seasonal.month is the good one
 ####
-ggplot(seasonal.mean.month, aes(x = V4, y= Q, col= Group.1)) + geom_point() + geom_abline(slope = -36.30, intercept = 2367.81)
 ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
 ggplot(yearly.mean.month, aes(x = Group.1, y = Q)) + geom_line(aes(col = Month)) + geom_point(aes(col = Month))
 p.line.amu<-ggplot(omit_total, aes(x = V4, y= Q)) + geom_point() + geom_abline(slope = -23.548, intercept = 2209.961, col = 2)
 
-p.amu<-ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.vp, aes(x = x, y = fit, col = "prediction")) + xlab("year") + ggtitle("Amudarya Kerki")
-amu.year.p <- ggplot(seasonal.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_point()
-amu.year.p
-seasonal.mean.year$Area <- c("amudarya_kerki")
 ##########
 
 #obsolete
