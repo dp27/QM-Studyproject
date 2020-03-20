@@ -46,10 +46,29 @@ names(ahangaran.snow)[1]<-paste("year.aha")
 names(ahangaran.drainage)[1]<-paste("year.aha")
 names(ahangaran.drainage)[2]<-paste("Month")
 names(ahangaran.drainage)[3]<-paste("Q")
+
+ahangaran.snow2<-ahangaran.snow
+ahangaran.snow2$V5<-NULL
+ahangaran.snow2$Month[ahangaran.snow2$Month == 1] <- NA
+ahangaran.snow2$Month[ahangaran.snow2$Month == 2] <- NA
+ahangaran.snow2$Month[ahangaran.snow2$Month == 4] <- NA
+ahangaran.snow2$Month[ahangaran.snow2$Month == 5] <- NA
+ahangaran.snow2$Month[ahangaran.snow2$Month == 6] <- NA
+ahangaran.snow2$Month[ahangaran.snow2$Month == 7] <- NA
+ahangaran.snow2$Month[ahangaran.snow2$Month == 8] <- NA
+ahangaran.snow2$Month[ahangaran.snow2$Month == 9] <- NA
+ahangaran.snow2$Month[ahangaran.snow2$Month == 10] <- NA
+ahangaran.snow2$Month[ahangaran.snow2$Month == 11] <- NA
+ahangaran.snow2$Month[ahangaran.snow2$Month == 12] <- NA
+ahangaran.snow2$V4[ahangaran.snow2$V4 == -9]<- NA
+omitted_ahangaran.snow<- na.omit(ahangaran.snow2)
+omitted_ahangaran.snow2<-aggregate(omitted_ahangaran.snow[, 2:4], list(omitted_ahangaran.snow$year), mean)
+names(omitted_ahangaran.snow2)[1]<-paste("year.aha")
+
 #data preperation for merge
 ##Obsolete
 
-aha.total<-merge(ahangaran.snow,ahangaran.drainage,by=c("Month","year.aha"))
+aha.total<-merge(ahangaran.drainage,omitted_ahangaran.snow2,by=c("year.aha"))
 aha.total$V4[aha.total$V4 == -9]<- NA
 aha.total$V5 <- NULL
 omitted<-na.omit(aha.aha.total)
@@ -76,7 +95,7 @@ april.year.aha$Month[april.year.aha$Month == 7] <- NA
 april.year.aha$Month[april.year.aha$Month == 8] <- NA
 april.year.aha$Month[april.year.aha$Month == 9] <- NA
 april.year.aha <- na.omit(april.year.aha)
-seasonal.aha.mean.april<- aggregate(april.year.aha[, 5:6], list(april.year.aha$year.aha), mean)
+seasonal.aha.mean.april<- aggregate(april.year.aha[, 3:6], list(april.year.aha$year.aha), mean)
 seasonal.aha.mean.april$Month<-c("April") 
 
 may.year.aha<-omit_aha.total
@@ -86,7 +105,7 @@ may.year.aha$Month[may.year.aha$Month == 7] <- NA
 may.year.aha$Month[may.year.aha$Month == 8] <- NA
 may.year.aha$Month[may.year.aha$Month == 9] <- NA
 may.year.aha <- na.omit(may.year.aha)
-seasonal.aha.mean.may<- aggregate(may.year.aha[, 5:6], list(may.year.aha$year.aha), mean)
+seasonal.aha.mean.may<- aggregate(may.year.aha[, 3:6], list(may.year.aha$year.aha), mean)
 seasonal.aha.mean.may$Month<-c("May") 
 
 june.year.aha<-omit_aha.total
@@ -96,7 +115,7 @@ june.year.aha$Month[june.year.aha$Month == 7] <- NA
 june.year.aha$Month[june.year.aha$Month == 8] <- NA
 june.year.aha$Month[june.year.aha$Month == 9] <- NA
 june.year.aha <- na.omit(june.year.aha)
-seasonal.aha.mean.june<- aggregate(june.year.aha[, 5:6], list(june.year.aha$year.aha), mean)
+seasonal.aha.mean.june<- aggregate(june.year.aha[, 3:6], list(june.year.aha$year.aha), mean)
 seasonal.aha.mean.june$Month<-c("June") 
 
 july.year.aha<-omit_aha.total
@@ -106,7 +125,7 @@ july.year.aha$Month[july.year.aha$Month == 6] <- NA
 july.year.aha$Month[july.year.aha$Month == 8] <- NA
 july.year.aha$Month[july.year.aha$Month == 9] <- NA
 july.year.aha <- na.omit(july.year.aha)
-seasonal.aha.mean.july<- aggregate(july.year.aha[, 5:6], list(july.year.aha$year.aha), mean)
+seasonal.aha.mean.july<- aggregate(july.year.aha[, 3:6], list(july.year.aha$year.aha), mean)
 seasonal.aha.mean.july$Month<-c("July") 
 
 august.year.aha<-omit_aha.total
@@ -116,7 +135,7 @@ august.year.aha$Month[august.year.aha$Month == 6] <- NA
 august.year.aha$Month[august.year.aha$Month == 7] <- NA
 august.year.aha$Month[august.year.aha$Month == 9] <- NA
 august.year.aha <- na.omit(august.year.aha)
-seasonal.aha.mean.august<- aggregate(august.year.aha[, 5:6], list(august.year.aha$year.aha), mean)
+seasonal.aha.mean.august<- aggregate(august.year.aha[, 3:6], list(august.year.aha$year.aha), mean)
 seasonal.aha.mean.august$Month<-c("August") 
 
 september.year.aha<-omit_aha.total
@@ -126,13 +145,15 @@ september.year.aha$Month[september.year.aha$Month == 6] <- NA
 september.year.aha$Month[september.year.aha$Month == 7] <- NA
 september.year.aha$Month[september.year.aha$Month == 8] <- NA
 september.year.aha <- na.omit(september.year.aha)
-seasonal.aha.mean.september<- aggregate(september.year.aha[, 5:6], list(september.year.aha$year.aha), mean)
+seasonal.aha.mean.september<- aggregate(september.year.aha[, 3:6], list(september.year.aha$year.aha), mean)
 seasonal.aha.mean.september$Month<-c("September") 
 
 year.ahaly.mean.Month<- rbind(seasonal.aha.mean.april,seasonal.aha.mean.may,seasonal.aha.mean.june,seasonal.aha.mean.july,seasonal.aha.mean.august,seasonal.aha.mean.september)
 #Cbind aber davor Group1 umbennen zu den jeweiligen Monatsnamen
-seasonal.aha.mean.year<- aggregate(omit_aha.total[, 5:6], list(omit_aha.total$year.aha), mean)
-seasonal.aha.mean.Month<- aggregate(omit_aha.total[, 5:6], list(omit_aha.total$Month), mean)
+seasonal.aha.mean.year<- aggregate(omit_aha.total[, 3:6], list(omit_aha.total$year.aha), mean)
+seasonal.aha.mean.year$name <- c("aha")
+
+seasonal.aha.mean.Month<- aggregate(omit_aha.total[, 3:6], list(omit_aha.total$Month), mean)
 
 ##model selection
 library(ggplot2)
@@ -151,6 +172,44 @@ lm.aha.vp <- lm(data = omit_aha.total, Q~V4)
 
 library(tidyr)
 library(dplyr)
+
+pb.aha.september <- lm.aha.september %>%
+  predict(., interval = 'prediction') %>%
+  as.data.frame() %>% mutate(x = sample(september.year.aha$year.aha))
+pb.september.aha<-aggregate(prediction.aha.september[, 1:3], list(prediction.aha.september$x), mean)
+pb.september.aha$month<-c("September")
+
+pb.aha.august <- lm.aha.august %>%
+  predict(., interval = 'prediction') %>%
+  as.data.frame() %>% mutate(x = sample(august.year.aha$year.aha))
+pb.august.aha<-aggregate(prediction.aha.august[, 1:3], list(prediction.aha.august$x), mean)
+pb.august.aha$month<-c("august")
+
+pb.aha.july <- lm.aha.july %>%
+  predict(., interval = 'prediction') %>%
+  as.data.frame() %>% mutate(x = sample(july.year.aha$year.aha))
+pb.july.aha<-aggregate(prediction.aha.july[, 1:3], list(prediction.aha.july$x), mean)
+pb.july.aha$month<-c("july")
+
+pb.aha.june <- lm.aha.june %>%
+  predict(., interval = 'prediction') %>%
+  as.data.frame() %>% mutate(x = sample(june.year.aha$year.aha))
+pb.june.aha<-aggregate(prediction.aha.june[, 1:3], list(prediction.aha.june$x), mean)
+pb.june.aha$month<-c("june")
+
+pb.aha.may <- lm.aha.may %>%
+  predict(., interval = 'prediction') %>%
+  as.data.frame() %>% mutate(x = sample(may.year.aha$year.aha))
+pb.may.aha<-aggregate(prediction.aha.may[, 1:3], list(prediction.aha.may$x), mean)
+pb.may.aha$month<-c("may")
+
+pb.aha.april <- lm.aha.april %>%
+  predict(., interval = 'prediction') %>%
+  as.data.frame() %>% mutate(x = sample(april.year.aha$year.aha))
+pb.april.aha<-aggregate(prediction.aha.april[, 1:3], list(prediction.aha.april$x), mean)
+pb.april.aha$month<-c("april")
+
+##confidence intervall
 prediction.aha.september <- lm.aha.september %>%
   predict(., interval = 'confidence') %>%
   as.data.frame() %>% mutate(x = sample(september.year.aha$year.aha))
@@ -195,7 +254,7 @@ aha.mean.p.vp<-aggregate(prediction.aha.vp[, 1:3], list(prediction.aha.vp$x), me
 pred.all.months.aha <- rbind(mean.p.april.aha,mean.p.may.aha,mean.p.june.aha,mean.p.july.aha,mean.p.august.aha,mean.p.september.aha)
 mean.pred.month.aha <- aggregate(pred.all.months.aha[, 2:4], list(pred.all.months.aha$month), mean)
 
-p.aha<-ggplot(seasonal.aha.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = aha.mean.p.vp, aes(x = Group.1, y = x, col = "prediction")) + xlab("year")
+p.aha<-ggplot(seasonal.aha.mean.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = aha.mean.p.vp, aes(x = Group.1, y = fit , col = "prediction")) + xlab("year")
 p.aha
 summary(lm.aha.vp)
 ggplot(seasonal.mean.aha.year, aes(x = Group.1, y = Q)) + geom_line() + geom_line(data = prediction.ahaseptember, aes(x = x, y = fit, col = "september"))+ geom_line(data = prediction.ahaaugust, aes(x = x, y = fit, col = "august")) + geom_line(data = prediction.ahajuly, aes(x = x, y = fit, col = "july")) +geom_line(data = prediction.ahajune, aes(x = x, y = fit, col = "june"))
